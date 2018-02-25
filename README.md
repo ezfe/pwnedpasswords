@@ -48,3 +48,9 @@ Pwned Passwords V2 uses https://en.wikipedia.org/wiki/K-anonymity to protect pas
 ## Thanks
 
 Special thanks to https://www.troyhunt.com/ for providing the API.
+
+## TODO
+
+- [ ] Vapor 2 support
+- [ ] Better documentation, and security information
+- [ ] More test cases, and better error handling
