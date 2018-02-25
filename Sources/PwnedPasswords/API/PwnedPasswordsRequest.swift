@@ -12,13 +12,15 @@ import AppleTLS
 
 public class PwnedPasswordsRequest {
 
-    init() { }
+    let eventLoop: EventLoop
+    
+    init(_ eventLoop: EventLoop) {
+        self.eventLoop = eventLoop
+    }
     
     public func send(short: String, long: String) throws -> Bool {
         var breached: Bool = false
         
-        let eventLoop = try DefaultEventLoop(label: "codes.vapor.http.test.client")
-
         let tcpSocket = try TCPSocket(isNonBlocking: true)
         let tcpClient = try TCPClient(socket: tcpSocket)
         var settings = TLSClientSettings()
@@ -32,8 +34,8 @@ public class PwnedPasswordsRequest {
         
         try tlsClient.connect(hostname: "api.pwnedpasswords.com", port: 443)
         let client = HTTPClient(
-            stream: tlsClient.socket.stream(on: eventLoop),
-            on: eventLoop
+            stream: tlsClient.socket.stream(on: self.eventLoop),
+            on: self.eventLoop
         )
         let req = HTTPRequest(method: .get, uri: URI(path: "/range/\(short)"), headers: [.host: "api.pwnedpasswords.com"])
         let res = try client.send(req).flatMap(to: Data.self) { res in

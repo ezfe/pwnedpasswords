@@ -19,10 +19,15 @@ Then to test a password, run e.g.:
 ```swift
 import PwnedPasswords
 
-if (try PwnedPasswords().testPassword(password: "password")) {
-	print("Password is breached")
-} else {
-	print("Password is not breached")
+router.get("password") { req -> String in
+        
+        let breached = try PwnedPasswords().testPassword(req.eventLoop, peassword: "password")
+        
+        if (breached) {
+        	string += "Password breached"
+        } else {
+        	string += "Password is not breached"
+	}
 }
 ```
 
