@@ -42,7 +42,9 @@ public class PwnedPasswordsRequest {
         
         let result = String(data: res, encoding: .utf8) ?? ""
         
-        result.enumerateLines { line, _ in
+        let data = result.split(separator: "\r\n")
+        
+        for line in data {
             let lineOriginal = "\(short)\(line)".truncated(40)
             
             if (lineOriginal == long.uppercased()) {
