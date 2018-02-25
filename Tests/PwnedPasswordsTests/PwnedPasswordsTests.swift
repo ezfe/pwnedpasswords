@@ -2,7 +2,7 @@ import XCTest
 @testable import PwnedPasswords
 @testable import Vapor
 
-class PwnedPasswordsTest: XCTestCase {
+class PwnedPasswordsTests: XCTestCase {
     func testBreached() throws {
         
         let breached = try PwnedPasswords().testPassword(password: "password")
