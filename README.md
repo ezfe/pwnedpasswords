@@ -30,9 +30,9 @@ router.get("password") { req -> String in
         let breached = try PwnedPasswords().testPassword(req.eventLoop, peassword: "password")
         
         if (breached) {
-        	string += "Password breached"
+        	print("Password breached")
         } else {
-        	string += "Password is not breached"
+        	print("Password is not breached")
 	}
 }
 ```
