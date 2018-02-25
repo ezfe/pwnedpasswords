@@ -8,10 +8,16 @@ This packages provides an easy way to test a password against https://haveibeenp
 
 ## Getting started
 
+### Vapor 2
+
+WIP.
+
+### Vapor 3
+
 In your `Package.swift` add:
 
 ```swift
-.package(url: "https://github.com/joscdk/pwnedpasswords-provider.git", .branch("master"))
+.package(url: "https://github.com/joscdk/pwnedpasswords-provider.git", .from: 2.0.0-beta)
 ```
 
 Then to test a password, run e.g.:
