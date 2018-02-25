@@ -3,6 +3,8 @@ import Crypto
 import Foundation
 
 public struct PwnedPasswords: Service {
+    public init() { }
+    
     public func testPassword(password: String) throws -> Bool {
         let hashed = SHA1.hash(Data(password.utf8)).hexString.uppercased()
         
