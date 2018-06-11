@@ -7,8 +7,8 @@ public final class PwnedPasswordsProvider: Provider {
     public func didBoot(_ container: Container) throws -> Future<Void> {
         return Future.done(on: container)
     }
-
-	public func register(_ services: inout Services) throws {
+    
+    public func register(_ services: inout Services) throws {
         services.register { (container) -> PwnedPasswords in
             return PwnedPasswords()
         }
