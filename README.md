@@ -5,7 +5,7 @@
 
 This packages provides an easy way to test a password against https://haveibeenpwned.com/API/v2#PwnedPasswords in your Vapor app.
 
-This package is a fork of joscdk/pwnedpasswords-provider
+This package is a fork of [joscdk/pwnedpasswords-provider](https://github.com/joscdk/pwnedpasswords-provider)
 
 ## Getting started
 
