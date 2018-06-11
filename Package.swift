@@ -7,8 +7,8 @@ let package = Package(
         .library(name: "PwnedPasswords", targets: ["PwnedPasswords"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", from: "3.0.0-rc"),
-        .package(url: "https://github.com/vapor/crypto.git", from: "3.0.0-rc"),
+        .package(url: "https://github.com/vapor/vapor.git", from: "3.0.4"),
+        .package(url: "https://github.com/vapor/crypto.git", from: "3.2.0"),
     ],
     targets: [
         .target(name: "PwnedPasswords", dependencies: ["Vapor", "Crypto"]),
