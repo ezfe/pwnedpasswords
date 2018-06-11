@@ -10,7 +10,7 @@ public struct PwnedPasswords: Service {
         case apiDataConversionError
     }
     
-    public func testPassword(_ client: Client, password: String) throws -> Future<Bool> {
+    public func test(password: String, with client: Client) throws -> Future<Bool> {
         guard let utf8Data = password.data(using: .utf8) else {
             throw PwnedPasswordsError.dataConversionError
         }
@@ -19,7 +19,7 @@ public struct PwnedPasswords: Service {
         return try send(short: String(hash.prefix(5)), long: hash, using: client)
     }
     
-    public func send(short: String, long: String, using client: Client) throws -> Future<Bool> {
+    private func send(short: String, long: String, using client: Client) throws -> Future<Bool> {
         let url = "https://api.pwnedpasswords.com/range/\(short)"
         
         return client.get(url).map(to: Bool.self) { res in
