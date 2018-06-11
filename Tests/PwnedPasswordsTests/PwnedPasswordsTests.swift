@@ -5,7 +5,8 @@ import XCTest
 class PwnedPasswordsTests: XCTestCase {
     func testBreached() throws {
         
-        let eventLoop = try DefaultEventLoop(label: "codes.vapor.pwned.passwords.test")
+        let application = Application()
+        application.client()
         
         let breached = try PwnedPasswords().testPassword(eventLoop, password: "password")
         
