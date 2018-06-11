@@ -5,18 +5,21 @@ import XCTest
 class PwnedPasswordsTests: XCTestCase {
     func testBreached() throws {
         
-        let application = Application()
-        application.client()
+        let application = try Application()
+        let client = try application.client()
+        let pwned = PwnedPasswords()
         
-        let breached = try PwnedPasswords().testPassword(eventLoop, password: "password")
+        let breached = try pwned.testPassword(client, password: "password").wait()
         
         XCTAssertEqual(breached, true)
     }
     
     func testNotBreached() throws {
-        let eventLoop = try DefaultEventLoop(label: "codes.vapor.pwned.passwords.test")
+        let application = try Application()
+        let client = try application.client()
+        let pwned = PwnedPasswords()
         
-        let breached = try PwnedPasswords().testPassword(eventLoop, password: "iamnotbreachedWuHuu")
+        let breached = try pwned.testPassword(client, password: "iamnotbreachedWuHuu").wait()
         
         XCTAssertEqual(breached, false)
     }
