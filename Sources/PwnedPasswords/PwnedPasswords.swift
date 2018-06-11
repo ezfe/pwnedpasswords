@@ -1,20 +1,21 @@
+import Foundation
 import Vapor
 import Crypto
-import Foundation
-import Async
 
 public struct PwnedPasswords: Service {
     public init() { }
     
-    public func testPassword(_ eventLoop: EventLoop, password: String) throws -> Bool {
-        let hashed = SHA1.hash(Data(password.utf8)).hexString.uppercased()
-        
-        return try PwnedPasswordsRequest(eventLoop).send(short: hashed.truncated(5), long: hashed)
+    public enum PwnedPasswordsError: Error {
+        case dataConversionError
+        case apiDataConversionError
     }
-}
+    
+    public func testPassword(_ request: Request, password: String) throws -> Future<Bool> {
+        guard let utf8Data = password.data(using: .utf8) else {
+            throw PwnedPasswordsError.dataConversionError
+        }
+        let hash = try SHA1.hash(utf8Data).hexEncodedString(uppercase: true)
 
-extension String {
-    func truncated(_ limit: Int) -> String {
-        return String(characters.prefix(limit))
+        return try PwnedPasswordsRequest(request).send(short: String(hash.prefix(5)), long: hash)
     }
 }

@@ -1,59 +1,32 @@
-import Vapor
 import Foundation
-import Async
-import HTTP
-import TCP
-import TLS
-#if os(Linux)
-import OpenSSL
-#else
-import AppleTLS
-#endif
+import Vapor
 
 public class PwnedPasswordsRequest {
-
-    let eventLoop: EventLoop
+    let request: Request
     
-    init(_ eventLoop: EventLoop) {
-        self.eventLoop = eventLoop
+    init(_ request: Request) {
+        self.request = request
     }
     
-    public func send(short: String, long: String) throws -> Bool {
-        var breached: Bool = false
+    public func send(short: String, long: String) throws -> Future<Bool> {
+        let client = try request.make(Client.self)
+        let url = "https://api.pwnedpasswords.com/range/\(short)"
         
-        let tcpSocket = try TCPSocket(isNonBlocking: true)
-        let tcpClient = try TCPClient(socket: tcpSocket)
-        var settings = TLSClientSettings()
-        settings.peerDomainName = "api.pwnedpasswords.com"
-        
-        #if os(macOS)
-            let tlsClient = try AppleTLSClient(tcp: tcpClient, using: settings)
-        #else
-            let tlsClient = try OpenSSLClient(tcp: tcpClient, using: settings)
-        #endif
-        
-        try tlsClient.connect(hostname: "api.pwnedpasswords.com", port: 443)
-        let client = HTTPClient(
-            stream: tlsClient.socket.stream(on: self.eventLoop),
-            on: self.eventLoop
-        )
-        let req = HTTPRequest(method: .get, uri: URI(path: "/range/\(short)"), headers: [.host: "api.pwnedpasswords.com"])
-        let res = try client.send(req).flatMap(to: Data.self) { res in
-            return res.body.makeData(max: 10_000_000)
-        }.await(on: eventLoop)
-        
-        let result = String(data: res, encoding: .utf8) ?? ""
-        
-        let data = result.split(separator: "\r\n")
-        
-        for line in data {
-            let lineOriginal = "\(short)\(line)".truncated(40)
-            
-            if (lineOriginal == long.uppercased()) {
-                breached = true
+        return client.get(url).map(to: Bool.self) { res in
+            guard let data = res.http.body.data else {
+                throw PwnedPasswords.PwnedPasswordsError.apiDataConversionError
             }
+            
+            let result = String(data: data, encoding: .utf8) ?? ""
+            let lines = result.split(separator: "\r\n")
+            for line in lines {
+                let lineOriginal = String("\(short)\(line)".prefix(40))
+                if lineOriginal == long {
+                    return true
+                }
+            }
+            
+            return false
         }
-        
-        return breached
     }
 }
