@@ -14,7 +14,7 @@ This package is a fork of [joscdk/pwnedpasswords-provider](https://github.com/jo
 In your `Package.swift` add:
 
 ```swift
-.package(url: "https://github.com/ezfe/pwnedpasswords-provider.git", .from: 2.0.0-beta)
+.package(url: "https://github.com/ezfe/pwnedpasswords-provider.git", .from: "1.0.0")
 ```
 
 Then to test a password, run e.g.:
@@ -22,9 +22,8 @@ Then to test a password, run e.g.:
 ```swift
 import PwnedPasswords
 
-router.get("password") { req -> String in
-        
-        try PwnedPasswords().testPassword(req, password: "password").map { breached in
+router.get("password") { req -> String in        
+	try PwnedPasswords().test(password: "password", with: req.client()).map { breached in
 		if breached {
 			print("Password breached")
 		} else {
@@ -49,4 +48,3 @@ Pwned Passwords V2 uses https://en.wikipedia.org/wiki/K-anonymity to protect pas
 ## TODO
 
 - [ ] Better documentation, and security information
-- [ ] More test cases, and better error handling
