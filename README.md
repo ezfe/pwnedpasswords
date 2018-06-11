@@ -1,23 +1,20 @@
 # Vapor PwnedPasswords Provider
 
-![Swift](http://img.shields.io/badge/swift-4.1-brightgreen.svg)
+![Swift](http://img.shields.io/badge/swift-4.2-brightgreen.svg)
 ![Vapor](http://img.shields.io/badge/vapor-3.0-brightgreen.svg)
-[![CircleCI](https://circleci.com/gh/joscdk/pwnedpasswords-provider/tree/master.svg?style=svg)](https://circleci.com/gh/joscdk/pwnedpasswords-provider/tree/master)
 
 This packages provides an easy way to test a password against https://haveibeenpwned.com/API/v2#PwnedPasswords in your Vapor app.
 
+This package is a fork of joscdk/pwnedpasswords-provider
+
 ## Getting started
-
-### Vapor 2
-
-WIP.
 
 ### Vapor 3
 
 In your `Package.swift` add:
 
 ```swift
-.package(url: "https://github.com/joscdk/pwnedpasswords-provider.git", .from: 2.0.0-beta)
+.package(url: "https://github.com/ezfe/pwnedpasswords-provider.git", .from: 2.0.0-beta)
 ```
 
 Then to test a password, run e.g.:
@@ -27,12 +24,12 @@ import PwnedPasswords
 
 router.get("password") { req -> String in
         
-        let breached = try PwnedPasswords().testPassword(req.eventLoop, peassword: "password")
-        
-        if (breached) {
-        	print("Password breached")
-        } else {
-        	print("Password is not breached")
+        try PwnedPasswords().testPassword(req, password: "password").map { breached in
+		if breached {
+			print("Password breached")
+		} else {
+			print("Password is not breached")
+		}
 	}
 }
 ```
@@ -47,10 +44,9 @@ Pwned Passwords V2 uses https://en.wikipedia.org/wiki/K-anonymity to protect pas
 
 ## Thanks
 
-Special thanks to https://www.troyhunt.com/ for providing the API.
+- Special thanks to https://www.troyhunt.com/ for providing the API.
 
 ## TODO
 
-- [ ] Vapor 2 support
 - [ ] Better documentation, and security information
 - [ ] More test cases, and better error handling
