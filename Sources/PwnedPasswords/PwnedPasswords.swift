@@ -3,14 +3,8 @@ import Vapor
 import Crypto
 
 fileprivate extension Data {
-    struct HexEncodingOptions: OptionSet {
-        let rawValue: Int
-        static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
-    }
-
-    func hexEncodedString(options: HexEncodingOptions = []) -> String {
-        let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
-        return map { String(format: format, $0) }.joined()
+    func hexEncodedString() -> String {
+        return self.map { String(format: "%02hhX", $0) }.joined()
     }
 }
 
@@ -27,7 +21,7 @@ public struct PwnedPasswords {
             throw PwnedPasswordsError.dataConversionError
         }
         
-        let hash = Data(Crypto.Insecure.SHA1.hash(data: utf8Data)).hexEncodedString(options: .upperCase)
+        let hash = Data(Crypto.Insecure.SHA1.hash(data: utf8Data)).hexEncodedString()
 
         return try send(short: String(hash.prefix(5)), long: hash, using: client)
     }

@@ -10,7 +10,7 @@ let package = Package(
         .library(name: "PwnedPasswords", targets: ["PwnedPasswords"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-beta"),
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/apple/swift-crypto", from: "1.0.0")
     ],
     targets: [
