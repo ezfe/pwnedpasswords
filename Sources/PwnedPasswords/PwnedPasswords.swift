@@ -9,28 +9,32 @@ fileprivate extension Data {
 }
 
 public struct PwnedPasswords {
-    public init() { }
+    private let client: Client
+
+    init(client: Client) {
+        self.client = client
+    }
     
     public enum PwnedPasswordsError: Error {
         case dataConversionError
         case apiDataConversionError
     }
     
-    public func test(password: String, with client: Client) throws -> EventLoopFuture<Bool> {
+    public func test(password: String) throws -> EventLoopFuture<Bool> {
         guard let utf8Data = password.data(using: .utf8) else {
             throw PwnedPasswordsError.dataConversionError
         }
         
         let hash = Data(Crypto.Insecure.SHA1.hash(data: utf8Data)).hexEncodedString()
 
-        return try send(short: String(hash.prefix(5)), long: hash, using: client)
+        return try send(short: String(hash.prefix(5)), long: hash)
     }
     
-    private func send(short: String, long: String, using client: Client) throws -> EventLoopFuture<Bool> {
+    private func send(short: String, long: String) throws -> EventLoopFuture<Bool> {
         let url = URI(string: "https://api.pwnedpasswords.com/range/\(short)")
 
 
-        return client.get(url).flatMapThrowing { res in
+        return self.client.get(url).flatMapThrowing { res in
             let result = try res.content.decode(String.self)
             let lines = result.split(separator: "\r\n")
             for line in lines {
@@ -42,6 +46,12 @@ public struct PwnedPasswords {
 
             return false
         }
+    }
+}
+
+public extension Request {
+    var pwnedPasswords: PwnedPasswords {
+        .init(client: self.client)
     }
 }
 

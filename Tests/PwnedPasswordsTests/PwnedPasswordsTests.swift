@@ -7,9 +7,9 @@ class PwnedPasswordsTests: XCTestCase {
         
         let application = Application()
         let client = application.client
-        let pwned = PwnedPasswords()
+        let pwned = PwnedPasswords(client: client)
 
-        let breached = try pwned.test(password: "password", with: client).wait()
+        let breached = try pwned.test(password: "password").wait()
 
         application.shutdown()
 
@@ -19,9 +19,9 @@ class PwnedPasswordsTests: XCTestCase {
     func testNotBreached() throws {
         let application = Application()
         let client = application.client
-        let pwned = PwnedPasswords()
+        let pwned = PwnedPasswords(client: client)
         
-        let breached = try pwned.test(password: "iamnotbreachedWuHuu", with: client).wait()
+        let breached = try pwned.test(password: "iamnotbreachedWuHuu").wait()
 
         application.shutdown()
 
