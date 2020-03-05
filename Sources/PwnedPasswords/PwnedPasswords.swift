@@ -17,7 +17,8 @@ public struct PwnedPasswords {
     
     public enum PwnedPasswordsError: Error {
         case dataConversionError
-        case apiDataConversionError
+        case apiResponseParseError
+        case hashError
     }
     
     public func test(password: String) throws -> EventLoopFuture<Bool> {
@@ -27,20 +28,34 @@ public struct PwnedPasswords {
         
         let hash = Data(Crypto.Insecure.SHA1.hash(data: utf8Data)).hexEncodedString()
 
-        return try send(short: String(hash.prefix(5)), long: hash)
+        return try send(hash)
     }
     
-    private func send(short: String, long: String) throws -> EventLoopFuture<Bool> {
-        let url = URI(string: "https://api.pwnedpasswords.com/range/\(short)")
+    private func send(_ searchHash: String) throws -> EventLoopFuture<Bool> {
+        guard searchHash.count == 40 else {
+            throw PwnedPasswordsError.hashError
+        }
 
+        let prefix = searchHash.prefix(5)
+        let suffix = searchHash.suffix(35)
 
-        return self.client.get(url).flatMapThrowing { res in
+        let url = URI(string: "https://api.pwnedpasswords.com/range/\(prefix)")
+        let headers = HTTPHeaders([("Add-Padding", "true")])
+
+        return self.client.get(url, headers: headers).flatMapThrowing { res in
             let result = try res.content.decode(String.self)
-            let lines = result.split(separator: "\r\n")
+            let lines = result.split { $0.isNewline }
             for line in lines {
-                let lineOriginal = String("\(short)\(line)".prefix(40))
-                if lineOriginal == long {
-                    return true
+                guard let separator = line.firstIndex(of: ":") else {
+                    throw PwnedPasswordsError.apiResponseParseError
+                }
+
+                if line[..<separator] == suffix {
+                    guard let count = Int(line[separator...]) else {
+                        throw PwnedPasswordsError.apiResponseParseError
+                    }
+
+                    return count > 0
                 }
             }
 

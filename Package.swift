@@ -14,7 +14,6 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-crypto", from: "1.0.0")
     ],
     targets: [
-        .target(name: "PwnedPasswords", dependencies: ["Vapor", "Crypto"]),
-        .testTarget(name: "PwnedPasswordsTests", dependencies: ["Vapor", "PwnedPasswords"])
+        .target(name: "PwnedPasswords", dependencies: ["Vapor", "Crypto"])
     ]
 )
