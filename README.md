@@ -1,7 +1,7 @@
 # Vapor PwnedPasswords Provider
 
-![Swift](http://img.shields.io/badge/swift-4.2-brightgreen.svg)
-![Vapor](http://img.shields.io/badge/vapor-3.0-brightgreen.svg)
+![Swift](http://img.shields.io/badge/swift-5.2-brightgreen.svg)
+![Vapor](http://img.shields.io/badge/vapor-4.0-brightgreen.svg)
 
 This packages provides an easy way to test a password against https://haveibeenpwned.com/API/v2#PwnedPasswords in your Vapor app.
 
