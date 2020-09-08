@@ -10,9 +10,11 @@ fileprivate extension Data {
 
 public struct PwnedPasswords {
     private let client: Client
+    private let eventLoop: EventLoop
 
-    init(client: Client) {
+    fileprivate init(client: Client, eventLoop: EventLoop) {
         self.client = client
+        self.eventLoop = eventLoop
     }
     
     public enum PwnedPasswordsError: Error {
@@ -21,19 +23,19 @@ public struct PwnedPasswords {
         case hashError
     }
     
-    public func test(password: String) throws -> EventLoopFuture<Bool> {
+    public func test(password: String) -> EventLoopFuture<Bool> {
         guard let utf8Data = password.data(using: .utf8) else {
-            throw PwnedPasswordsError.dataConversionError
+            return self.eventLoop.makeFailedFuture(PwnedPasswordsError.dataConversionError)
         }
         
         let hash = Data(Crypto.Insecure.SHA1.hash(data: utf8Data)).hexEncodedString()
 
-        return try send(hash)
+        return send(hash)
     }
     
-    private func send(_ searchHash: String) throws -> EventLoopFuture<Bool> {
+    private func send(_ searchHash: String) -> EventLoopFuture<Bool> {
         guard searchHash.count == 40 else {
-            throw PwnedPasswordsError.hashError
+            return self.eventLoop.makeFailedFuture(PwnedPasswordsError.hashError)
         }
 
         let prefix = searchHash.prefix(5)
@@ -66,7 +68,7 @@ public struct PwnedPasswords {
 
 public extension Request {
     var pwnedPasswords: PwnedPasswords {
-        .init(client: self.client)
+        .init(client: self.client, eventLoop: self.eventLoop)
     }
 }
 

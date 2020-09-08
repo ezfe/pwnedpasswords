@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.2
 import PackageDescription
 
 let package = Package(
@@ -10,10 +10,13 @@ let package = Package(
         .library(name: "PwnedPasswords", targets: ["PwnedPasswords"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-rc"),
-        .package(url: "https://github.com/apple/swift-crypto", from: "1.0.0")
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.29.1"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "1.0.2")
     ],
     targets: [
-        .target(name: "PwnedPasswords", dependencies: ["Vapor", "Crypto"])
+        .target(name: "PwnedPasswords", dependencies: [
+            .product(name: "Vapor", package: "vapor"),
+            .product(name: "Crypto", package: "swift-crypto"),
+        ])
     ]
 )
