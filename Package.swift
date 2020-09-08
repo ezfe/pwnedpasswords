@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "PwnedPasswords",
+    name: "pwnedpasswords",
     platforms: [
        .macOS(.v10_15)
     ],
