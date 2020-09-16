@@ -60,7 +60,7 @@ public struct PwnedPasswords {
                 }
 
                 if line[..<separator] == suffix {
-                    guard let count = Int(line[separator...]) else {
+                    guard let count = Int(line[separator...].dropFirst()) else {
                         throw PwnedPasswordsError.apiResponseParseError
                     }
 
