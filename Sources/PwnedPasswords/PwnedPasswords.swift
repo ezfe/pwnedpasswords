@@ -45,7 +45,14 @@ public struct PwnedPasswords {
         let headers = HTTPHeaders([("Add-Padding", "true")])
 
         return self.client.get(url, headers: headers).flatMapThrowing { res in
-            let result = try res.content.decode(String.self)
+            guard let responseLength = res.body?.readableBytes else {
+                throw PwnedPasswordsError.apiResponseParseError
+            }
+
+            guard let result = res.body?.getString(at: 0, length: responseLength) else {
+                throw PwnedPasswordsError.apiResponseParseError
+            }
+
             let lines = result.split { $0.isNewline }
             for line in lines {
                 guard let separator = line.firstIndex(of: ":") else {
